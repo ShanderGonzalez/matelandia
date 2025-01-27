@@ -1,10 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Star } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Tutorial from './Tutorial';
-import { Progress } from "@/components/ui/progress";
+import GameHeader from './game/GameHeader';
+import TimerBar from './game/TimerBar';
+import QuestionDisplay from './game/QuestionDisplay';
+import AnswerOption from './game/AnswerOption';
+import CelebrationOverlay from './game/CelebrationOverlay';
 
 interface GameScreenProps {
   score: number;
@@ -20,7 +23,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const [showTutorial, setShowTutorial] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationMessage, setCelebrationMessage] = useState('');
-  const [timeLeft, setTimeLeft] = useState(10); // 10 segundos por pregunta
+  const [timeLeft, setTimeLeft] = useState(10);
   const { toast } = useToast();
 
   const getNumberRangeForLevel = useCallback((currentLevel: number) => {
@@ -78,7 +81,6 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
 
       return () => clearInterval(timer);
     } else if (timeLeft === 0) {
-      // Tiempo agotado, tratar como respuesta incorrecta
       setCelebrationMessage(`¡SE ACABÓ EL TIEMPO! 🕒\n¡WOW! ¡${score} PUNTOS! 🌟`);
       setShowCelebration(true);
       setTimeout(() => {
@@ -182,76 +184,29 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   return (
     <>
       <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
-      
-      {showCelebration && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-          <div className="relative">
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm rounded-xl -z-10" />
-            <div className="text-4xl md:text-6xl font-bold text-center whitespace-pre-line animate-[scale-in_0.5s_ease-out] px-8 py-6 text-white">
-              {celebrationMessage}
-            </div>
-          </div>
-        </div>
-      )}
+      <CelebrationOverlay show={showCelebration} message={celebrationMessage} />
       
       <Card className="max-w-4xl mx-auto mt-8 p-8">
-        <div className="flex justify-between mb-4">
-          <div className="text-xl font-bold flex items-center gap-2">
-            <span>Nivel: {level}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Star className="text-yellow-400 fill-yellow-400" />
-            <span className="text-xl font-bold">{score}</span>
-          </div>
-        </div>
-
-        {/* Timer Progress Bar */}
-        <div className="mb-4">
-          <Progress 
-            value={timeLeft * 10} 
-            className={`h-2 ${
-              timeLeft <= 3 
-                ? '[&>div]:bg-red-500' 
-                : timeLeft <= 5 
-                  ? '[&>div]:bg-yellow-500' 
-                  : '[&>div]:bg-green-500'
-            }`}
-          />
-          <div className="text-center mt-1 text-sm font-medium">
-            Tiempo: {timeLeft}s
-          </div>
-        </div>
-
-        <h2 className="text-3xl font-bold text-center mb-8" role="alert" aria-live="polite">
-          ¿Cuánto es {question.num1} {question.operation} {question.num2}?
-        </h2>
+        <GameHeader level={level} score={score} />
+        <TimerBar timeLeft={timeLeft} />
+        <QuestionDisplay num1={question.num1} num2={question.num2} operation={question.operation} />
 
         <div className="grid grid-cols-4 gap-8 mb-8">
           {options.map((option, index) => (
-            <div key={index} className="flex flex-col items-center gap-2">
-              <button
-                className={`w-12 h-12 ${index === 0 ? 'bg-black' : 'bg-gray-800'} text-white rounded-lg font-bold focus:ring-4 focus:ring-blue-500`}
-                aria-label={`Tecla ${keys[index]}`}
-              >
-                {keys[index]}
-              </button>
-              <button 
-                onClick={() => handleAnswer(option)}
-                className={`w-20 h-20 rounded-full ${balloonColors[index]} flex items-center justify-center text-2xl font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer`}
-                role="button"
-                aria-label={`Opción ${option}`}
-              >
-                {option}
-              </button>
-            </div>
+            <AnswerOption
+              key={index}
+              index={index}
+              option={option}
+              keyLabel={keys[index]}
+              balloonColor={balloonColors[index]}
+              onAnswer={handleAnswer}
+            />
           ))}
         </div>
 
         <div className="text-center">
           <Button
-            onClick={() => {
-              onGameEnd(score);
-            }}
+            onClick={() => onGameEnd(score)}
             variant="outline"
             className="mt-4"
           >
