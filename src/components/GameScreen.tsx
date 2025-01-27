@@ -12,14 +12,25 @@ interface GameScreenProps {
 
 const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
   const [level, setLevel] = useState(1);
-  const [question, setQuestion] = useState({ num1: 0, num2: 0 });
+  const [question, setQuestion] = useState({ num1: 0, num2: 0, operation: '×' });
   const [options, setOptions] = useState<number[]>([]);
   const { toast } = useToast();
 
   const generateQuestion = useCallback(() => {
-    const num1 = Math.floor(Math.random() * 5) + 1;
-    const num2 = Math.floor(Math.random() * 5) + 1;
-    const correctAnswer = num1 * num2;
+    // Alternar aleatoriamente entre multiplicación y división
+    const isMultiplication = Math.random() < 0.5;
+    let num1, num2, correctAnswer;
+
+    if (isMultiplication) {
+      num1 = Math.floor(Math.random() * 5) + 1;
+      num2 = Math.floor(Math.random() * 5) + 1;
+      correctAnswer = num1 * num2;
+    } else {
+      // Para división, generamos primero el resultado (1-5) y el divisor (1-5)
+      correctAnswer = Math.floor(Math.random() * 5) + 1;
+      num2 = Math.floor(Math.random() * 5) + 1;
+      num1 = correctAnswer * num2; // Esto garantiza divisiones exactas
+    }
     
     // Generar opciones incorrectas
     let wrongAnswers = [];
@@ -37,7 +48,11 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
       [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
     }
     
-    setQuestion({ num1, num2 });
+    setQuestion({ 
+      num1, 
+      num2, 
+      operation: isMultiplication ? '×' : '÷'
+    });
     setOptions(allOptions);
   }, []);
 
@@ -49,7 +64,9 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
     if (event.key.toLowerCase() in keyToIndex) {
       const selectedIndex = keyToIndex[event.key.toLowerCase()];
       const selectedAnswer = options[selectedIndex];
-      const correctAnswer = question.num1 * question.num2;
+      const correctAnswer = question.operation === '×' 
+        ? question.num1 * question.num2
+        : question.num1 / question.num2;
       
       if (selectedAnswer === correctAnswer) {
         toast({
@@ -57,7 +74,7 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
           description: "¡Muy bien! Sigamos adelante.",
           variant: "default",
         });
-        setScore(score + 1); // Aquí está el cambio: pasamos directamente el nuevo valor
+        setScore(score + 1);
         generateQuestion();
       } else {
         toast({
@@ -92,7 +109,7 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
       </div>
 
       <h2 className="text-3xl font-bold text-center mb-8" role="alert" aria-live="polite">
-        ¿Cuánto es {question.num1} × {question.num2}?
+        ¿Cuánto es {question.num1} {question.operation} {question.num2}?
       </h2>
 
       <div className="grid grid-cols-4 gap-8 mb-8">
