@@ -9,9 +9,10 @@ interface GameScreenProps {
   score: number;
   setScore: (score: number) => void;
   setGameStarted: (started: boolean) => void;
+  onGameEnd: (finalScore: number) => void;
 }
 
-const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
+const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenProps) => {
   const [level, setLevel] = useState(1);
   const [question, setQuestion] = useState({ num1: 0, num2: 0, operation: '×' });
   const [options, setOptions] = useState<number[]>([]);
@@ -73,12 +74,13 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
       generateQuestion();
     } else {
       toast({
-        title: "¡Inténtalo de nuevo!",
-        description: "No te rindas, ¡tú puedes!",
+        title: "¡Juego terminado!",
+        description: `Tu puntaje final fue: ${score}`,
         variant: "destructive",
       });
+      onGameEnd(score);
     }
-  }, [question, score, setScore, generateQuestion, toast]);
+  }, [question, score, setScore, generateQuestion, toast, onGameEnd]);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const keyToIndex: { [key: string]: number } = {
@@ -142,11 +144,13 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
 
         <div className="text-center">
           <Button
-            onClick={() => setGameStarted(false)}
+            onClick={() => {
+              onGameEnd(score);
+            }}
             variant="outline"
             className="mt-4"
           >
-            Volver al inicio
+            Terminar juego
           </Button>
         </div>
       </Card>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Star } from "lucide-react";
@@ -17,14 +17,23 @@ import { Progress } from "@/components/ui/progress";
 const Index = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [score, setScore] = useState(0);
+  const [scores, setScores] = useState<number[]>([]);
   const { toast } = useToast();
 
-  // Simulamos algunas puntuaciones guardadas (esto podría venir de una base de datos en el futuro)
-  const progressHistory = [
-    { date: '2024-03-20', score: 85 },
-    { date: '2024-03-19', score: 70 },
-    { date: '2024-03-18', score: 95 },
-  ];
+  // Cargar puntuaciones al iniciar
+  useEffect(() => {
+    const savedScores = localStorage.getItem('gameScores');
+    if (savedScores) {
+      setScores(JSON.parse(savedScores));
+    }
+  }, []);
+
+  const handleGameEnd = (finalScore: number) => {
+    const newScores = [finalScore, ...scores].slice(0, 10); // Mantener solo los últimos 10 puntajes
+    setScores(newScores);
+    localStorage.setItem('gameScores', JSON.stringify(newScores));
+    setGameStarted(false);
+  };
 
   const handleStartGame = () => {
     setGameStarted(true);
@@ -62,28 +71,39 @@ const Index = () => {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Tu Progreso</DialogTitle>
+                  <DialogTitle>Historial de Puntajes</DialogTitle>
                   <DialogDescription>
-                    Aquí puedes ver tus últimas puntuaciones
+                    Tus últimas 10 partidas
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
-                  {progressHistory.map((progress, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>{progress.date}</span>
-                        <span>{progress.score}%</span>
+                  {scores.length === 0 ? (
+                    <p className="text-center text-gray-500">
+                      Aún no hay puntajes registrados
+                    </p>
+                  ) : (
+                    scores.map((gameScore, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Partida {scores.length - index}</span>
+                          <span>{gameScore} puntos</span>
+                        </div>
+                        <Progress value={gameScore * 10} /> {/* Multiplicamos por 10 para mejor visualización */}
                       </div>
-                      <Progress value={progress.score} />
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </DialogContent>
             </Dialog>
           </div>
         </Card>
       ) : (
-        <GameScreen score={score} setScore={setScore} setGameStarted={setGameStarted} />
+        <GameScreen 
+          score={score} 
+          setScore={setScore} 
+          setGameStarted={setGameStarted}
+          onGameEnd={handleGameEnd}
+        />
       )}
     </div>
   );
