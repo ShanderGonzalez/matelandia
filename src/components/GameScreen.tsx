@@ -56,6 +56,28 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
     setOptions(allOptions);
   }, []);
 
+  const handleAnswer = useCallback((selectedAnswer: number) => {
+    const correctAnswer = question.operation === '×' 
+      ? question.num1 * question.num2
+      : question.num1 / question.num2;
+    
+    if (selectedAnswer === correctAnswer) {
+      toast({
+        title: "¡Correcto!",
+        description: "¡Muy bien! Sigamos adelante.",
+        variant: "default",
+      });
+      setScore(score + 1);
+      generateQuestion();
+    } else {
+      toast({
+        title: "¡Inténtalo de nuevo!",
+        description: "No te rindas, ¡tú puedes!",
+        variant: "destructive",
+      });
+    }
+  }, [question, score, setScore, generateQuestion, toast]);
+
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const keyToIndex: { [key: string]: number } = {
       'a': 0, 's': 1, 'd': 2, 'f': 3
@@ -63,28 +85,9 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
     
     if (event.key.toLowerCase() in keyToIndex) {
       const selectedIndex = keyToIndex[event.key.toLowerCase()];
-      const selectedAnswer = options[selectedIndex];
-      const correctAnswer = question.operation === '×' 
-        ? question.num1 * question.num2
-        : question.num1 / question.num2;
-      
-      if (selectedAnswer === correctAnswer) {
-        toast({
-          title: "¡Correcto!",
-          description: "¡Muy bien! Sigamos adelante.",
-          variant: "default",
-        });
-        setScore(score + 1);
-        generateQuestion();
-      } else {
-        toast({
-          title: "¡Inténtalo de nuevo!",
-          description: "No te rindas, ¡tú puedes!",
-          variant: "destructive",
-        });
-      }
+      handleAnswer(options[selectedIndex]);
     }
-  }, [options, question, score, setScore, generateQuestion, toast]);
+  }, [options, handleAnswer]);
 
   useEffect(() => {
     generateQuestion();
@@ -121,13 +124,14 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
             >
               {keys[index]}
             </button>
-            <div 
-              className={`w-20 h-20 rounded-full ${balloonColors[index]} flex items-center justify-center text-2xl font-bold shadow-lg`}
+            <button 
+              onClick={() => handleAnswer(option)}
+              className={`w-20 h-20 rounded-full ${balloonColors[index]} flex items-center justify-center text-2xl font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer`}
               role="button"
               aria-label={`Opción ${option}`}
             >
               {option}
-            </div>
+            </button>
           </div>
         ))}
       </div>
