@@ -24,7 +24,6 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationMessage, setCelebrationMessage] = useState('');
   const [timeLeft, setTimeLeft] = useState(10);
-  const [gameActive, setGameActive] = useState(false);
   const { toast } = useToast();
 
   const getNumberRangeForLevel = useCallback((currentLevel: number) => {
@@ -85,8 +84,6 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
 
   // Timer effect
   useEffect(() => {
-    if (!gameActive) return; // No iniciar el timer hasta que el juego esté activo
-
     if (timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft(prev => prev - 1);
@@ -108,7 +105,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
         className: "bg-gradient-to-r from-orange-500 to-red-500 text-white border-none",
       });
     }
-  }, [timeLeft, score, onGameEnd, toast, gameActive]);
+  }, [timeLeft, score, onGameEnd, toast]);
 
   const handleAnswer = useCallback((selectedAnswer: number) => {
     console.log('Handling answer:', selectedAnswer);
@@ -195,33 +192,20 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   }, [options, handleAnswer]);
 
   useEffect(() => {
-    if (gameActive) {
-      generateQuestion();
-    }
-  }, [gameActive, generateQuestion]);
+    generateQuestion();
+  }, [generateQuestion]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
-  const handleGameStart = () => {
-    console.log('Starting game...');
-    setGameActive(true);
-    setTimeLeft(10);
-    generateQuestion();
-  };
-
   const balloonColors = ['bg-green-400', 'bg-yellow-300', 'bg-blue-400', 'bg-pink-400'];
   const keys = ['A', 'S', 'D', 'F'];
 
   return (
     <>
-      <Tutorial 
-        open={showTutorial} 
-        onClose={() => setShowTutorial(false)}
-        onStart={handleGameStart}
-      />
+      <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
       <CelebrationOverlay show={showCelebration} message={celebrationMessage} />
       
       <Card className="max-w-4xl mx-auto mt-8 p-8">
