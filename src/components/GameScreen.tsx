@@ -209,13 +209,12 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
         <div className="mb-4">
           <Progress 
             value={timeLeft * 10} 
-            className="h-2"
-            indicatorClassName={`${
+            className={`h-2 ${
               timeLeft <= 3 
-                ? 'bg-red-500' 
+                ? '[&>div]:bg-red-500' 
                 : timeLeft <= 5 
-                  ? 'bg-yellow-500' 
-                  : 'bg-green-500'
+                  ? '[&>div]:bg-yellow-500' 
+                  : '[&>div]:bg-green-500'
             }`}
           />
           <div className="text-center mt-1 text-sm font-medium">
@@ -232,13 +231,13 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
             <div key={index} className="flex flex-col items-center gap-2">
               <button
                 className={`w-12 h-12 ${index === 0 ? 'bg-black' : 'bg-gray-800'} text-white rounded-lg font-bold focus:ring-4 focus:ring-blue-500`}
-                aria-label={`Tecla ${['A', 'S', 'D', 'F'][index]}`}
+                aria-label={`Tecla ${keys[index]}`}
               >
-                {['A', 'S', 'D', 'F'][index]}
+                {keys[index]}
               </button>
               <button 
                 onClick={() => handleAnswer(option)}
-                className={`w-20 h-20 rounded-full ${['bg-green-400', 'bg-yellow-300', 'bg-blue-400', 'bg-pink-400'][index]} flex items-center justify-center text-2xl font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer`}
+                className={`w-20 h-20 rounded-full ${balloonColors[index]} flex items-center justify-center text-2xl font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer`}
                 role="button"
                 aria-label={`Opción ${option}`}
               >
