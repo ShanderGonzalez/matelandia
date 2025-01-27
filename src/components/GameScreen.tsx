@@ -135,9 +135,6 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
         <div className="flex justify-between mb-4">
           <div className="text-xl font-bold flex items-center gap-2">
             <span>Nivel: {level}</span>
-            <span className="text-sm text-gray-600">
-              (Tabla del {getNumberRangeForLevel(level).min})
-            </span>
           </div>
           <div className="flex items-center gap-2">
             <Star className="text-yellow-400 fill-yellow-400" />
