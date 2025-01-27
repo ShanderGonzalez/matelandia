@@ -17,11 +17,11 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const [question, setQuestion] = useState({ num1: 0, num2: 0, operation: '×' });
   const [options, setOptions] = useState<number[]>([]);
   const [showTutorial, setShowTutorial] = useState(true);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState('');
   const { toast } = useToast();
 
-  // Función para determinar el rango de números según el nivel
   const getNumberRangeForLevel = useCallback((currentLevel: number) => {
-    // Cada 5 preguntas correctas, aumentamos el nivel
     const baseNumber = Math.min(Math.floor((currentLevel - 1) / 5) + 2, 10);
     return {
       min: baseNumber,
@@ -44,7 +44,6 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       num1 = correctAnswer * num2;
     }
     
-    // Generar opciones incorrectas
     let wrongAnswers = [];
     while (wrongAnswers.length < 3) {
       const wrong = Math.floor(Math.random() * (correctAnswer * 2)) + 1;
@@ -53,7 +52,6 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       }
     }
     
-    // Mezclar las opciones
     const allOptions = [...wrongAnswers, correctAnswer];
     for (let i = allOptions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -77,10 +75,13 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       const newScore = score + 1;
       setScore(newScore);
       
-      // Aumentar nivel cada 5 respuestas correctas
       if (newScore % 5 === 0) {
         const newLevel = level + 1;
         setLevel(newLevel);
+        setCelebrationMessage(`🌟 ¡NIVEL ${newLevel}! 🌟\n¡ERES INCREÍBLE!`);
+        setShowCelebration(true);
+        setTimeout(() => setShowCelebration(false), 2000);
+        
         toast({
           title: "🌟 ¡NIVEL SUPERADO! 🌟",
           description: `¡WOW! ¡Eres increíble! Has llegado al nivel ${newLevel}. ¡Sigue así, campeón! 🚀`,
@@ -96,6 +97,9 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
           "¡Perfecto! 🌟 ¡Eres un genio de las matemáticas!"
         ];
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        setCelebrationMessage(randomMessage);
+        setShowCelebration(true);
+        setTimeout(() => setShowCelebration(false), 1500);
         
         toast({
           title: "¡CORRECTO! 🎯",
@@ -107,13 +111,19 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       
       generateQuestion();
     } else {
+      setCelebrationMessage(`¡JUEGO TERMINADO! 🎮\n¡WOW! ¡${score} PUNTOS! 🌟`);
+      setShowCelebration(true);
+      setTimeout(() => {
+        setShowCelebration(false);
+        onGameEnd(score);
+      }, 2000);
+      
       toast({
         title: "¡Juego Terminado! 🎮",
         description: `¡Wow! ¡Has conseguido ${score} puntos! 🌟 ¡Eres increíble! ¿Quieres intentarlo de nuevo y superar tu récord? 🚀`,
         variant: "destructive",
         className: "bg-gradient-to-r from-orange-500 to-red-500 text-white border-none",
       });
-      onGameEnd(score);
     }
   }, [question, score, setScore, generateQuestion, toast, onGameEnd, level]);
 
@@ -143,6 +153,16 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   return (
     <>
       <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
+      
+      {/* Mensaje de celebración animado */}
+      {showCelebration && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="text-4xl md:text-6xl font-bold text-center whitespace-pre-line animate-[scale-in_0.5s_ease-out] bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
+            {celebrationMessage}
+          </div>
+        </div>
+      )}
+      
       <Card className="max-w-4xl mx-auto mt-8 p-8">
         <div className="flex justify-between mb-4">
           <div className="text-xl font-bold flex items-center gap-2">
