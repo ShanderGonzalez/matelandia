@@ -19,26 +19,35 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const [showTutorial, setShowTutorial] = useState(true);
   const { toast } = useToast();
 
+  // Función para determinar el rango de números según el nivel
+  const getNumberRangeForLevel = useCallback((currentLevel: number) => {
+    // Cada 5 preguntas correctas, aumentamos el nivel
+    const baseNumber = Math.min(Math.floor((currentLevel - 1) / 5) + 2, 10);
+    return {
+      min: baseNumber,
+      max: baseNumber
+    };
+  }, []);
+
   const generateQuestion = useCallback(() => {
-    // Alternar aleatoriamente entre multiplicación y división
-    const isMultiplication = Math.random() < 0.5;
+    const range = getNumberRangeForLevel(level);
+    const isMultiplication = Math.random() < 0.8; // 80% probabilidad de multiplicación
     let num1, num2, correctAnswer;
 
     if (isMultiplication) {
-      num1 = Math.floor(Math.random() * 5) + 1;
-      num2 = Math.floor(Math.random() * 5) + 1;
+      num1 = range.min; // Usamos el número de la tabla actual
+      num2 = Math.floor(Math.random() * 10) + 1; // Del 1 al 10
       correctAnswer = num1 * num2;
     } else {
-      // Para división, generamos primero el resultado (1-5) y el divisor (1-5)
       correctAnswer = Math.floor(Math.random() * 5) + 1;
       num2 = Math.floor(Math.random() * 5) + 1;
-      num1 = correctAnswer * num2; // Esto garantiza divisiones exactas
+      num1 = correctAnswer * num2;
     }
     
     // Generar opciones incorrectas
     let wrongAnswers = [];
     while (wrongAnswers.length < 3) {
-      const wrong = Math.floor(Math.random() * 20) + 1;
+      const wrong = Math.floor(Math.random() * (correctAnswer * 2)) + 1;
       if (wrong !== correctAnswer && !wrongAnswers.includes(wrong)) {
         wrongAnswers.push(wrong);
       }
@@ -57,7 +66,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       operation: isMultiplication ? '×' : '÷'
     });
     setOptions(allOptions);
-  }, []);
+  }, [level, getNumberRangeForLevel]);
 
   const handleAnswer = useCallback((selectedAnswer: number) => {
     const correctAnswer = question.operation === '×' 
@@ -65,12 +74,26 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       : question.num1 / question.num2;
     
     if (selectedAnswer === correctAnswer) {
-      toast({
-        title: "¡Correcto!",
-        description: "¡Muy bien! Sigamos adelante.",
-        variant: "default",
-      });
-      setScore(score + 1);
+      const newScore = score + 1;
+      setScore(newScore);
+      
+      // Aumentar nivel cada 5 respuestas correctas
+      if (newScore % 5 === 0) {
+        const newLevel = level + 1;
+        setLevel(newLevel);
+        toast({
+          title: "¡Nuevo nivel desbloqueado!",
+          description: `¡Has alcanzado el nivel ${newLevel}! Las preguntas serán un poco más difíciles.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "¡Correcto!",
+          description: "¡Muy bien! Sigamos adelante.",
+          variant: "default",
+        });
+      }
+      
       generateQuestion();
     } else {
       toast({
@@ -80,7 +103,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       });
       onGameEnd(score);
     }
-  }, [question, score, setScore, generateQuestion, toast, onGameEnd]);
+  }, [question, score, setScore, generateQuestion, toast, onGameEnd, level]);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     const keyToIndex: { [key: string]: number } = {
@@ -110,7 +133,12 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
       <Card className="max-w-4xl mx-auto mt-8 p-8">
         <div className="flex justify-between mb-4">
-          <div className="text-xl font-bold">Nivel: {level}</div>
+          <div className="text-xl font-bold flex items-center gap-2">
+            <span>Nivel: {level}</span>
+            <span className="text-sm text-gray-600">
+              (Tabla del {getNumberRangeForLevel(level).min})
+            </span>
+          </div>
           <div className="flex items-center gap-2">
             <Star className="text-yellow-400 fill-yellow-400" />
             <span className="text-xl font-bold">{score}</span>
