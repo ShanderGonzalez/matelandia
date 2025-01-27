@@ -27,16 +27,20 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const { toast } = useToast();
 
   const getNumberRangeForLevel = useCallback((currentLevel: number) => {
+    console.log('Getting number range for level:', currentLevel);
     const baseNumber = Math.min(Math.floor((currentLevel - 1) / 5) + 2, 10);
     return {
       min: baseNumber,
-      max: baseNumber
+      max: baseNumber + 2
     };
   }, []);
 
   const generateQuestion = useCallback(() => {
-    setTimeLeft(10); // Reiniciar el temporizador con cada nueva pregunta
+    console.log('Generating new question for level:', level);
+    setTimeLeft(10);
     const range = getNumberRangeForLevel(level);
+    console.log('Number range:', range);
+    
     const isMultiplication = Math.random() < 0.8;
     let num1, num2, correctAnswer;
 
@@ -45,13 +49,19 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
       num2 = Math.floor(Math.random() * 10) + 1;
       correctAnswer = num1 * num2;
     } else {
-      correctAnswer = Math.floor(Math.random() * 5) + 1;
       num2 = Math.floor(Math.random() * 5) + 1;
-      num1 = correctAnswer * num2;
+      num1 = range.min * num2; // Aseguramos que la división sea exacta
+      correctAnswer = num1 / num2;
     }
     
+    console.log('Generated question:', { num1, num2, operation: isMultiplication ? '×' : '÷', correctAnswer });
+    
     let wrongAnswers = [];
-    while (wrongAnswers.length < 3) {
+    const maxAttempts = 10;
+    let attempts = 0;
+    
+    while (wrongAnswers.length < 3 && attempts < maxAttempts) {
+      attempts++;
       const wrong = Math.floor(Math.random() * (correctAnswer * 2)) + 1;
       if (wrong !== correctAnswer && !wrongAnswers.includes(wrong)) {
         wrongAnswers.push(wrong);
@@ -98,20 +108,30 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   }, [timeLeft, score, onGameEnd, toast]);
 
   const handleAnswer = useCallback((selectedAnswer: number) => {
+    console.log('Handling answer:', selectedAnswer);
     const correctAnswer = question.operation === '×' 
       ? question.num1 * question.num2
       : question.num1 / question.num2;
     
+    console.log('Correct answer:', correctAnswer);
+    
     if (selectedAnswer === correctAnswer) {
       const newScore = score + 1;
+      console.log('New score:', newScore);
       setScore(newScore);
       
       if (newScore % 5 === 0) {
         const newLevel = level + 1;
+        console.log('Leveling up to:', newLevel);
         setLevel(newLevel);
         setCelebrationMessage(`🌟 ¡NIVEL ${newLevel}! 🌟\n¡ERES INCREÍBLE!`);
         setShowCelebration(true);
-        setTimeout(() => setShowCelebration(false), 2000);
+        
+        // Aseguramos que la celebración se oculte antes de generar la siguiente pregunta
+        setTimeout(() => {
+          setShowCelebration(false);
+          generateQuestion();
+        }, 2000);
         
         toast({
           title: "🌟 ¡NIVEL SUPERADO! 🌟",
@@ -130,7 +150,10 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
         setCelebrationMessage(randomMessage);
         setShowCelebration(true);
-        setTimeout(() => setShowCelebration(false), 1500);
+        setTimeout(() => {
+          setShowCelebration(false);
+          generateQuestion();
+        }, 1500);
         
         toast({
           title: "¡CORRECTO! 🎯",
@@ -139,9 +162,8 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
           className: "bg-gradient-to-r from-green-400 to-blue-500 text-white border-none",
         });
       }
-      
-      generateQuestion();
     } else {
+      console.log('Incorrect answer, ending game');
       setCelebrationMessage(`¡JUEGO TERMINADO! 🎮\n¡WOW! ¡${score} PUNTOS! 🌟`);
       setShowCelebration(true);
       setTimeout(() => {
@@ -197,8 +219,8 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
               key={index}
               index={index}
               option={option}
-              keyLabel={keys[index]}
-              balloonColor={balloonColors[index]}
+              keyLabel={['A', 'S', 'D', 'F'][index]}
+              balloonColor={['bg-green-400', 'bg-yellow-300', 'bg-blue-400', 'bg-pink-400'][index]}
               onAnswer={handleAnswer}
             />
           ))}
