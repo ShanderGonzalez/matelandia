@@ -82,24 +82,36 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
         const newLevel = level + 1;
         setLevel(newLevel);
         toast({
-          title: "¡Nuevo nivel desbloqueado!",
-          description: `¡Has alcanzado el nivel ${newLevel}! Las preguntas serán un poco más difíciles.`,
+          title: "🌟 ¡NIVEL SUPERADO! 🌟",
+          description: `¡WOW! ¡Eres increíble! Has llegado al nivel ${newLevel}. ¡Sigue así, campeón! 🚀`,
           variant: "default",
+          className: "bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none",
         });
       } else {
+        const messages = [
+          "¡Genial! 🎉 ¡Eres un matemático estrella! ⭐",
+          "¡Increíble! 🌈 ¡Sigue así!",
+          "¡Fantástico! 🦸‍♂️ ¡Eres super inteligente!",
+          "¡Excelente trabajo! 🏆 ¡Eres asombroso!",
+          "¡Perfecto! 🌟 ¡Eres un genio de las matemáticas!"
+        ];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        
         toast({
-          title: "¡Correcto!",
-          description: "¡Muy bien! Sigamos adelante.",
+          title: "¡CORRECTO! 🎯",
+          description: randomMessage,
           variant: "default",
+          className: "bg-gradient-to-r from-green-400 to-blue-500 text-white border-none",
         });
       }
       
       generateQuestion();
     } else {
       toast({
-        title: "¡Juego terminado!",
-        description: `Tu puntaje final fue: ${score}`,
+        title: "¡Juego Terminado! 🎮",
+        description: `¡Wow! ¡Has conseguido ${score} puntos! 🌟 ¡Eres increíble! ¿Quieres intentarlo de nuevo y superar tu récord? 🚀`,
         variant: "destructive",
+        className: "bg-gradient-to-r from-orange-500 to-red-500 text-white border-none",
       });
       onGameEnd(score);
     }
@@ -150,14 +162,14 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
           {options.map((option, index) => (
             <div key={index} className="flex flex-col items-center gap-2">
               <button
-                className={`w-12 h-12 ${keys[index] === 'A' ? 'bg-black' : 'bg-gray-800'} text-white rounded-lg font-bold focus:ring-4 focus:ring-blue-500`}
-                aria-label={`Tecla ${keys[index]}`}
+                className={`w-12 h-12 ${index === 0 ? 'bg-black' : 'bg-gray-800'} text-white rounded-lg font-bold focus:ring-4 focus:ring-blue-500`}
+                aria-label={`Tecla ${['A', 'S', 'D', 'F'][index]}`}
               >
-                {keys[index]}
+                {['A', 'S', 'D', 'F'][index]}
               </button>
               <button 
                 onClick={() => handleAnswer(option)}
-                className={`w-20 h-20 rounded-full ${balloonColors[index]} flex items-center justify-center text-2xl font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer`}
+                className={`w-20 h-20 rounded-full ${['bg-green-400', 'bg-yellow-300', 'bg-blue-400', 'bg-pink-400'][index]} flex items-center justify-center text-2xl font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer`}
                 role="button"
                 aria-label={`Opción ${option}`}
               >
