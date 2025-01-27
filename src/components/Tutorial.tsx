@@ -31,9 +31,10 @@ const tutorialSteps = [
 interface TutorialProps {
   open: boolean;
   onClose: () => void;
+  onStart: () => void;
 }
 
-const Tutorial = ({ open, onClose }: TutorialProps) => {
+const Tutorial = ({ open, onClose, onStart }: TutorialProps) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const handleNext = () => {
@@ -41,6 +42,7 @@ const Tutorial = ({ open, onClose }: TutorialProps) => {
       setCurrentStep(currentStep + 1);
     } else {
       onClose();
+      onStart();
       setCurrentStep(0);
     }
   };
