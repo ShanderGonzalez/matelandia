@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Tutorial from './Tutorial';
+import { Progress } from "@/components/ui/progress";
 
 interface GameScreenProps {
   score: number;
@@ -19,6 +20,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const [showTutorial, setShowTutorial] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationMessage, setCelebrationMessage] = useState('');
+  const [timeLeft, setTimeLeft] = useState(10); // 10 segundos por pregunta
   const { toast } = useToast();
 
   const getNumberRangeForLevel = useCallback((currentLevel: number) => {
@@ -30,13 +32,14 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   }, []);
 
   const generateQuestion = useCallback(() => {
+    setTimeLeft(10); // Reiniciar el temporizador con cada nueva pregunta
     const range = getNumberRangeForLevel(level);
-    const isMultiplication = Math.random() < 0.8; // 80% probabilidad de multiplicación
+    const isMultiplication = Math.random() < 0.8;
     let num1, num2, correctAnswer;
 
     if (isMultiplication) {
-      num1 = range.min; // Usamos el número de la tabla actual
-      num2 = Math.floor(Math.random() * 10) + 1; // Del 1 al 10
+      num1 = range.min;
+      num2 = Math.floor(Math.random() * 10) + 1;
       correctAnswer = num1 * num2;
     } else {
       correctAnswer = Math.floor(Math.random() * 5) + 1;
@@ -65,6 +68,32 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
     });
     setOptions(allOptions);
   }, [level, getNumberRangeForLevel]);
+
+  // Timer effect
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else if (timeLeft === 0) {
+      // Tiempo agotado, tratar como respuesta incorrecta
+      setCelebrationMessage(`¡SE ACABÓ EL TIEMPO! 🕒\n¡WOW! ¡${score} PUNTOS! 🌟`);
+      setShowCelebration(true);
+      setTimeout(() => {
+        setShowCelebration(false);
+        onGameEnd(score);
+      }, 2000);
+      
+      toast({
+        title: "¡Se acabó el tiempo! ⏰",
+        description: `¡Has conseguido ${score} puntos! 🌟 ¡Inténtalo de nuevo y sé más rápido! 🚀`,
+        variant: "destructive",
+        className: "bg-gradient-to-r from-orange-500 to-red-500 text-white border-none",
+      });
+    }
+  }, [timeLeft, score, onGameEnd, toast]);
 
   const handleAnswer = useCallback((selectedAnswer: number) => {
     const correctAnswer = question.operation === '×' 
@@ -154,14 +183,10 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
     <>
       <Tutorial open={showTutorial} onClose={() => setShowTutorial(false)} />
       
-      {/* Mensaje de celebración animado */}
       {showCelebration && (
         <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
           <div className="relative">
-            {/* Fondo con blur para mejorar contraste */}
             <div className="absolute inset-0 bg-black/30 backdrop-blur-sm rounded-xl -z-10" />
-            
-            {/* Mensaje con mejor contraste */}
             <div className="text-4xl md:text-6xl font-bold text-center whitespace-pre-line animate-[scale-in_0.5s_ease-out] px-8 py-6 text-white">
               {celebrationMessage}
             </div>
@@ -177,6 +202,24 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
           <div className="flex items-center gap-2">
             <Star className="text-yellow-400 fill-yellow-400" />
             <span className="text-xl font-bold">{score}</span>
+          </div>
+        </div>
+
+        {/* Timer Progress Bar */}
+        <div className="mb-4">
+          <Progress 
+            value={timeLeft * 10} 
+            className="h-2"
+            indicatorClassName={`${
+              timeLeft <= 3 
+                ? 'bg-red-500' 
+                : timeLeft <= 5 
+                  ? 'bg-yellow-500' 
+                  : 'bg-green-500'
+            }`}
+          />
+          <div className="text-center mt-1 text-sm font-medium">
+            Tiempo: {timeLeft}s
           </div>
         </div>
 
