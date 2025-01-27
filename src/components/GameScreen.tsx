@@ -57,7 +57,7 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
           description: "¡Muy bien! Sigamos adelante.",
           variant: "default",
         });
-        setScore(prev => prev + 1);
+        setScore(score + 1); // Aquí está el cambio: pasamos directamente el nuevo valor
         generateQuestion();
       } else {
         toast({
@@ -67,7 +67,7 @@ const GameScreen = ({ score, setScore, setGameStarted }: GameScreenProps) => {
         });
       }
     }
-  }, [options, question, setScore, generateQuestion, toast]);
+  }, [options, question, score, setScore, generateQuestion, toast]);
 
   useEffect(() => {
     generateQuestion();
