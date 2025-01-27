@@ -74,54 +74,56 @@ const Index = () => {
                 <Rocket className="h-6 w-6 text-blue-500 animate-pulse" aria-hidden="true" />
               </div>
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="bg-white/90 hover:bg-white text-purple-600 border-purple-300 px-8 py-6 text-xl rounded-full shadow-md flex items-center gap-2 focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 focus:outline-none"
-                    aria-label="Ver historial de puntajes"
-                  >
-                    <Trophy className="h-5 w-5" aria-hidden="true" />
-                    VER PROGRESO
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]" role="dialog" aria-modal="true">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-purple-600 flex items-center gap-2">
-                      <Trophy className="h-6 w-6" aria-hidden="true" />
-                      Historial de Puntajes
-                    </DialogTitle>
-                    <DialogDescription>
-                      Tus últimas 10 partidas
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    {scores.length === 0 ? (
-                      <p className="text-center text-gray-500" role="status">
-                        Aún no hay puntajes registrados
-                      </p>
-                    ) : (
-                      <div role="list">
-                        {scores.map((gameScore, index) => (
-                          <div key={index} className="space-y-2" role="listitem">
-                            <div className="flex justify-between text-sm">
-                              <span className="font-medium">Partida {scores.length - index}</span>
-                              <span className="text-purple-600 font-bold" aria-label={`Puntaje: ${gameScore} puntos`}>
-                                {gameScore} puntos
-                              </span>
+              <div className="flex justify-center">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="bg-white/90 hover:bg-white text-purple-600 border-purple-300 px-8 py-6 text-xl rounded-full shadow-md flex items-center gap-2 focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 focus:outline-none mx-auto"
+                      aria-label="Ver historial de puntajes"
+                    >
+                      <Trophy className="h-5 w-5" aria-hidden="true" />
+                      VER PROGRESO
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]" role="dialog" aria-modal="true">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl font-bold text-purple-600 flex items-center gap-2">
+                        <Trophy className="h-6 w-6" aria-hidden="true" />
+                        Historial de Puntajes
+                      </DialogTitle>
+                      <DialogDescription>
+                        Tus últimas 10 partidas
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      {scores.length === 0 ? (
+                        <p className="text-center text-gray-500" role="status">
+                          Aún no hay puntajes registrados
+                        </p>
+                      ) : (
+                        <div role="list">
+                          {scores.map((gameScore, index) => (
+                            <div key={index} className="space-y-2" role="listitem">
+                              <div className="flex justify-between text-sm">
+                                <span className="font-medium">Partida {scores.length - index}</span>
+                                <span className="text-purple-600 font-bold" aria-label={`Puntaje: ${gameScore} puntos`}>
+                                  {gameScore} puntos
+                                </span>
+                              </div>
+                              <Progress 
+                                value={gameScore * 10} 
+                                className="h-3 bg-purple-100" 
+                                aria-label={`Barra de progreso: ${gameScore} puntos`}
+                              /> 
                             </div>
-                            <Progress 
-                              value={gameScore * 10} 
-                              className="h-3 bg-purple-100" 
-                              aria-label={`Barra de progreso: ${gameScore} puntos`}
-                            /> 
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </Card>
 
