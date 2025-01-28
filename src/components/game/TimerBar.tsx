@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Progress } from "@/components/ui/progress";
 
 interface TimerBarProps {
@@ -6,20 +6,14 @@ interface TimerBarProps {
 }
 
 const TimerBar = ({ timeLeft }: TimerBarProps) => {
-  useEffect(() => {
-    // Crear un mensaje que será leído por el screen reader
-    const announcement = new SpeechSynthesisUtterance(`${timeLeft} segundos restantes`);
-    window.speechSynthesis.speak(announcement);
-  }, [timeLeft]);
-
   return (
     <div className="mb-4">
       <Progress 
-        value={(timeLeft / 60) * 100} 
+        value={timeLeft * 10} 
         className={`h-2 ${
-          timeLeft <= 10 
+          timeLeft <= 3 
             ? '[&>div]:bg-red-500' 
-            : timeLeft <= 20 
+            : timeLeft <= 5 
               ? '[&>div]:bg-yellow-500' 
               : '[&>div]:bg-green-500'
         }`}
@@ -28,8 +22,7 @@ const TimerBar = ({ timeLeft }: TimerBarProps) => {
       <div 
         className="text-center mt-1 text-sm font-medium"
         role="timer"
-        aria-live="assertive"
-        aria-atomic="true"
+        aria-live="polite"
         tabIndex={0}
       >
         Tiempo: {timeLeft}s
