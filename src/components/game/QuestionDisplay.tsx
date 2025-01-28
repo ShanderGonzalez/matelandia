@@ -8,7 +8,12 @@ interface QuestionDisplayProps {
 
 const QuestionDisplay = ({ num1, num2, operation }: QuestionDisplayProps) => {
   return (
-    <h2 className="text-3xl font-bold text-center mb-8" role="alert" aria-live="polite">
+    <h2 
+      className="text-3xl font-bold text-center mb-8" 
+      role="alert" 
+      aria-live="polite"
+      tabIndex={0}
+    >
       ¿Cuánto es {num1} {operation} {num2}?
     </h2>
   );

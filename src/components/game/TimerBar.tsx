@@ -17,8 +17,14 @@ const TimerBar = ({ timeLeft }: TimerBarProps) => {
               ? '[&>div]:bg-yellow-500' 
               : '[&>div]:bg-green-500'
         }`}
+        aria-label={`Tiempo restante: ${timeLeft} segundos`}
       />
-      <div className="text-center mt-1 text-sm font-medium">
+      <div 
+        className="text-center mt-1 text-sm font-medium"
+        role="timer"
+        aria-live="polite"
+        tabIndex={0}
+      >
         Tiempo: {timeLeft}s
       </div>
     </div>
