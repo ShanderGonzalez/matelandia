@@ -16,7 +16,7 @@ const tutorialSteps = [
   },
   {
     title: "¿Cómo jugar?",
-    description: "Verás una operación matemática y cuatro globos con diferentes respuestas. Tienes 90 segundos para responder cada pregunta.",
+    description: "Verás una operación matemática y cuatro globos con diferentes respuestas. Tienes 45 segundos para responder cada pregunta.",
   },
   {
     title: "Elige tu respuesta",
