@@ -45,7 +45,7 @@ const Index = () => {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#FFE29F] to-[#FF719A] p-4" role="main">
+    <main className="min-h-screen bg-gradient-to-b from-[#FFE29F] to-[#FF719A] p-4" role="main" aria-label="Juego de matemáticas">
       {!gameStarted ? (
         <div className="max-w-2xl mx-auto mt-10 space-y-8">
           <div className="animate-bounce flex justify-center" role="presentation">
@@ -55,7 +55,7 @@ const Index = () => {
           <Card className="backdrop-blur-sm bg-white/90 rounded-3xl shadow-xl p-8 text-center transform hover:scale-105 transition-transform duration-300">
             <header className="flex items-center justify-center gap-4 mb-6">
               <Sparkles className="h-8 w-8 text-purple-500" aria-hidden="true" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" tabIndex={0}>
                 ¡Explosión de Multiplicaciones!
               </h1>
               <Sparkles className="h-8 w-8 text-purple-500" aria-hidden="true" />
@@ -86,35 +86,40 @@ const Index = () => {
                       VER PROGRESO
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]" role="dialog" aria-modal="true">
+                  <DialogContent 
+                    className="sm:max-w-[425px]" 
+                    role="dialog" 
+                    aria-labelledby="progress-title"
+                    aria-describedby="progress-description"
+                  >
                     <DialogHeader>
-                      <DialogTitle className="text-2xl font-bold text-purple-600 flex items-center gap-2">
+                      <DialogTitle id="progress-title" className="text-2xl font-bold text-purple-600 flex items-center gap-2" tabIndex={0}>
                         <Trophy className="h-6 w-6" aria-hidden="true" />
                         Historial de Puntajes
                       </DialogTitle>
-                      <DialogDescription>
+                      <DialogDescription id="progress-description" tabIndex={0}>
                         Tus últimas 10 partidas
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
                       {scores.length === 0 ? (
-                        <p className="text-center text-gray-500" role="status">
+                        <p className="text-center text-gray-500" role="status" tabIndex={0}>
                           Aún no hay puntajes registrados
                         </p>
                       ) : (
-                        <div role="list">
+                        <div role="list" aria-label="Lista de puntajes">
                           {scores.map((gameScore, index) => (
-                            <div key={index} className="space-y-2" role="listitem">
+                            <div key={index} className="space-y-2" role="listitem" tabIndex={0}>
                               <div className="flex justify-between text-sm">
                                 <span className="font-medium">Partida {scores.length - index}</span>
-                                <span className="text-purple-600 font-bold" aria-label={`Puntaje: ${gameScore} puntos`}>
+                                <span className="text-purple-600 font-bold">
                                   {gameScore} puntos
                                 </span>
                               </div>
                               <Progress 
                                 value={gameScore * 10} 
                                 className="h-3 bg-purple-100" 
-                                aria-label={`Barra de progreso: ${gameScore} puntos`}
+                                aria-label={`Progreso de la partida ${scores.length - index}: ${gameScore} puntos`}
                               /> 
                             </div>
                           ))}
@@ -128,7 +133,7 @@ const Index = () => {
           </Card>
 
           <div className="text-center space-y-4">
-            <p className="text-white text-lg font-medium shadow-sm" role="complementary">
+            <p className="text-white text-lg font-medium shadow-sm" role="complementary" tabIndex={0}>
               ¡Practica tus multiplicaciones de forma divertida!
             </p>
             <div className="flex justify-center gap-4" role="presentation">

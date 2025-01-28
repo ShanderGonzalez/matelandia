@@ -49,15 +49,29 @@ const Tutorial = ({ open, onClose, onStart }: TutorialProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent 
+        className="sm:max-w-[425px]"
+        role="dialog"
+        aria-labelledby="tutorial-title"
+        aria-describedby="tutorial-description"
+      >
         <DialogHeader>
-          <DialogTitle>{tutorialSteps[currentStep].title}</DialogTitle>
-          <DialogDescription className="text-lg">
+          <DialogTitle id="tutorial-title" tabIndex={0}>
+            {tutorialSteps[currentStep].title}
+          </DialogTitle>
+          <DialogDescription 
+            id="tutorial-description" 
+            className="text-lg"
+            tabIndex={0}
+          >
             {tutorialSteps[currentStep].description}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button onClick={handleNext}>
+          <Button 
+            onClick={handleNext}
+            aria-label={currentStep === tutorialSteps.length - 1 ? "Empezar juego" : "Siguiente instrucción"}
+          >
             {currentStep === tutorialSteps.length - 1 ? "¡Empezar!" : "Siguiente"}
           </Button>
         </DialogFooter>
