@@ -23,6 +23,10 @@ const tutorialSteps = [
     description: "Puedes hacer clic en el globo con la respuesta correcta o usar las teclas A, S, D, F del teclado.",
   },
   {
+    title: "¡Tiempo límite!",
+    description: "Tienes 90 segundos para responder cada pregunta. ¡Mantén un ojo en el temporizador!",
+  },
+  {
     title: "¡Gana puntos!",
     description: "Por cada respuesta correcta ganarás una estrella. ¡Intenta conseguir todas las que puedas!",
   },

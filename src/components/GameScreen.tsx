@@ -23,7 +23,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const [showTutorial, setShowTutorial] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationMessage, setCelebrationMessage] = useState('');
-  const [timeLeft, setTimeLeft] = useState(60); // Cambiado a 60 segundos
+  const [timeLeft, setTimeLeft] = useState(90); // Cambiado a 90 segundos
   const [gameActive, setGameActive] = useState(false);
   const { toast } = useToast();
 
@@ -38,7 +38,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
 
   const generateQuestion = useCallback(() => {
     console.log('Generating new question for level:', level);
-    setTimeLeft(60); // Cambiado a 60 segundos
+    setTimeLeft(90); // Cambiado a 90 segundos
     const range = getNumberRangeForLevel(level);
     console.log('Number range:', range);
     
@@ -208,7 +208,7 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
   const handleGameStart = () => {
     console.log('Starting game...');
     setGameActive(true);
-    setTimeLeft(60); // Cambiado a 60 segundos
+    setTimeLeft(90); // Cambiado a 90 segundos
     generateQuestion();
   };
 
