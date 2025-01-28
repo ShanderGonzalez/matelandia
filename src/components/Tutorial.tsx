@@ -41,14 +41,18 @@ const Tutorial = ({ open, onClose, onStart }: TutorialProps) => {
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      onClose();
-      onStart();
-      setCurrentStep(0);
+      handleClose();
     }
   };
 
+  const handleClose = () => {
+    onClose();
+    onStart();
+    setCurrentStep(0);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent 
         className="sm:max-w-[425px]"
         role="dialog"
