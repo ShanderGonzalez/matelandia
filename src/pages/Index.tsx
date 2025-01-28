@@ -55,19 +55,33 @@ const Index = () => {
           <Card className="backdrop-blur-sm bg-white/90 rounded-3xl shadow-xl p-8 text-center transform hover:scale-105 transition-transform duration-300">
             <header className="flex items-center justify-center gap-4 mb-6">
               <Sparkles className="h-8 w-8 text-purple-500" aria-hidden="true" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" tabIndex={0}>
+              <h1 
+                className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" 
+                tabIndex={0}
+                role="heading"
+                aria-level={1}
+              >
                 ¡Explosión de Multiplicaciones!
               </h1>
               <Sparkles className="h-8 w-8 text-purple-500" aria-hidden="true" />
             </header>
 
             <div className="space-y-6">
+              <p 
+                className="text-xl text-gray-700 mb-6" 
+                tabIndex={0}
+                role="text"
+              >
+                ¡Bienvenido a Explosión de Matemáticas!
+              </p>
+
               <div className="flex justify-center gap-4 items-center">
                 <Rocket className="h-6 w-6 text-blue-500 animate-pulse" aria-hidden="true" />
                 <Button
                   onClick={handleStartGame}
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-6 text-xl rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:outline-none"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-6 text-xl rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
                   aria-label="Iniciar juego de multiplicaciones"
+                  tabIndex={0}
                 >
                   ¡JUGAR AHORA!
                 </Button>
@@ -79,8 +93,9 @@ const Index = () => {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="bg-white/90 hover:bg-white text-purple-600 border-purple-300 px-8 py-6 text-xl rounded-full shadow-md flex items-center gap-2 focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 focus:outline-none mx-auto"
+                      className="bg-white/90 hover:bg-white text-purple-600 border-purple-300 px-8 py-6 text-xl rounded-full shadow-md flex items-center gap-2"
                       aria-label="Ver historial de puntajes"
+                      tabIndex={0}
                     >
                       <Trophy className="h-5 w-5" aria-hidden="true" />
                       VER PROGRESO
