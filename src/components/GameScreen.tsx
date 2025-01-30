@@ -29,10 +29,11 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
 
   const getNumberRangeForLevel = useCallback((currentLevel: number) => {
     console.log('Getting number range for level:', currentLevel);
-    const baseNumber = Math.min(Math.floor((currentLevel - 1) / 5) + 2, 10);
+    // Aumentamos la dificultad base y el incremento por nivel
+    const baseNumber = Math.min(Math.floor((currentLevel - 1) / 3) + 3, 12);
     return {
       min: baseNumber,
-      max: baseNumber + 2
+      max: baseNumber + 3
     };
   }, []);
 
@@ -42,16 +43,17 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
     const range = getNumberRangeForLevel(level);
     console.log('Number range:', range);
     
-    const isMultiplication = Math.random() < 0.8;
+    // Aumentamos la probabilidad de multiplicaciones y hacemos números más grandes
+    const isMultiplication = Math.random() < 0.85; // 85% de probabilidad de multiplicación
     let num1, num2, correctAnswer;
 
     if (isMultiplication) {
-      num1 = range.min;
-      num2 = Math.floor(Math.random() * 10) + 1;
+      num1 = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      num2 = Math.floor(Math.random() * (12 - 2 + 1)) + 2; // Números del 2 al 12
       correctAnswer = num1 * num2;
     } else {
       num2 = Math.floor(Math.random() * 5) + 1;
-      num1 = range.min * num2; // Aseguramos que la división sea exacta
+      num1 = range.min * num2;
       correctAnswer = num1 / num2;
     }
     
@@ -63,8 +65,9 @@ const GameScreen = ({ score, setScore, setGameStarted, onGameEnd }: GameScreenPr
     
     while (wrongAnswers.length < 3 && attempts < maxAttempts) {
       attempts++;
-      const wrong = Math.floor(Math.random() * (correctAnswer * 2)) + 1;
-      if (wrong !== correctAnswer && !wrongAnswers.includes(wrong)) {
+      // Generamos respuestas incorrectas más cercanas al resultado correcto
+      const wrong = correctAnswer + (Math.random() < 0.5 ? 1 : -1) * Math.floor(Math.random() * (correctAnswer * 0.3));
+      if (wrong !== correctAnswer && !wrongAnswers.includes(wrong) && wrong > 0) {
         wrongAnswers.push(wrong);
       }
     }
